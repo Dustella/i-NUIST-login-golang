@@ -1,2 +1,6 @@
 login.exe
 login
+build
+upx.exe 
+
+main.exe 
