@@ -8,15 +8,15 @@ import (
 )
 
 func main() {
-	username, password, isp := config.GetArgs()
+	nuist := config.GetConfig()
 	attempt := 5
 	myip := ""
 	// ip := ""
-	fmt.Printf("username is %s, password is %s, isp is %s\n", username, password, isp)
+	fmt.Printf("username is %s, password is %s, isp is %s\n", nuist.Username, nuist.Password, nuist.ISP)
 	for i := 0; i < attempt; i++ {
 		ip, err := auth.GetIP()
 		if err != nil {
-			fmt.Printf("Get IP err, are you in I-NUIST?")
+			fmt.Printf("Get IP err, are you in I-NUIST?\n")
 			time.Sleep(time.Second * 1)
 			fmt.Printf("Making another getIP request, try time: %v\n", i)
 		} else {
@@ -27,7 +27,7 @@ func main() {
 	}
 
 	for i := 0; i < attempt; i++ {
-		success, err := auth.DoAuth(username, password, isp, myip)
+		success, err := auth.DoAuth(nuist.Username, nuist.Password, nuist.ISP, myip)
 		if success {
 			fmt.Println("Login sucess")
 			break

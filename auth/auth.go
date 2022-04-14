@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type AuthInfo struct {
+type RespAuthInfo struct {
 	Code int `json:"code"`
 	Data interface {
 	} `json:"data"`
@@ -30,7 +30,7 @@ func DoAuth(username string, password string, isp string, ip string) (bool, erro
 	payloadBytes, _ := json.Marshal(payload)
 	resp, _ := http.Post("http://10.255.255.34/api/v1/login", "application/json", bytes.NewReader(payloadBytes))
 	body, _ := ioutil.ReadAll(resp.Body)
-	var res AuthInfo
+	var res RespAuthInfo
 	json.Unmarshal(body, &res)
 	if res.Message == "ok" {
 		return true, nil

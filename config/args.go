@@ -4,7 +4,7 @@ import (
 	"flag"
 )
 
-func GetArgs() (string, string, string) {
+func GetArgs() NUIST_Auth {
 	var username string
 	var isp string
 	var password string
@@ -12,5 +12,6 @@ func GetArgs() (string, string, string) {
 	flag.StringVar(&password, "password", "", "Password")
 	flag.StringVar(&isp, "isp", "", "isp")
 	flag.Parse()
-	return username, password, isp
+	res := NUIST_Auth{Username: username, Password: password, ISP: isp}
+	return res
 }
