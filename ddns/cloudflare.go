@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+// Bolow are ddns from https://github.com/hugomd/cloudflare-ddns
+
 type CloudflareAPI struct {
 	ZoneID     string
 	Host       string

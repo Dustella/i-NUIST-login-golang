@@ -20,3 +20,24 @@ func GetEnv() NUIST_Auth {
 	res := NUIST_Auth{Username: username, Password: password, ISP: isp}
 	return res
 }
+
+func GetCFEnv() Cloudflare_Config {
+	var cfhostname string
+	var cfzoneid string
+	var cfapitoken string
+	if os.Getenv("cfhostname") != "" {
+		cfhostname = os.Getenv("cfhostname")
+	}
+	if os.Getenv("cfapitoken") != "" {
+		cfapitoken = os.Getenv("cfapitoken")
+	}
+	if os.Getenv("cfzoneid") != "" {
+		cfzoneid = os.Getenv("cfzoneid")
+	}
+	res := Cloudflare_Config{
+		Cloudflare_API_Token: cfapitoken,
+		Cloudflare_ZONEID:    cfzoneid,
+		Cloudflare_Host:      cfhostname,
+	}
+	return res
+}
