@@ -14,7 +14,7 @@ todo: 作为服务监测联网情况，检测到掉线就重拨
 - [ ] 自动安装配置脚本
 - [ ] 阿里云DDNS
 - [ ] 腾讯云DDNS
-- [ ] Cloudflare DDNS
+- [X] Cloudflare DDNS
 - [ ] 多拨支持
 
 ## 使用说明
@@ -58,7 +58,25 @@ isp可选参数为：
 
 ### DDNS
 
-**WIP，暂时无法工作**
+#### Cloudflare DDNS
+
+目前本工具中 CF 的 DDNS 功能，测试下来非常稳，缺点是，因为是国外DNS，解析记录更新扩散到国内需要一段时间（大约十分钟到半小时不等）
+
+为了使用Cloudflare DDNS，最好你原来就是Cloudflare用户。
+
+你需要提供三个参数
+
+参数名 | 说明
+----|----
+cfzoneid| CloudFlare ZoneID
+cfAPIToken | CloudFlare API令牌
+cfhostname | 你要DDNS的域名
+
+前两个参数你可以参考 https://lighti.me/5560.html ，拿到这两个参数就可以
+
+你可以通过运行参数或者环境变量的方式提供给程序这三个参数，参数名和环境变量名都分别为cfzoneid，cfapitoken和cfhostname
+
+如果完整地通过运行参数或者环境变量提供了这三个参数，会自动执行DDNS
 
 ## 自己编译
 

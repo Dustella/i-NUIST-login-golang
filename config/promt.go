@@ -9,6 +9,7 @@ func proNuist() NUIST_Auth {
 	fmt.Println("Enter your password:")
 	fmt.Scan(&password)
 	fmt.Println("Enter your isp:")
+	fmt.Println("ISP can be: ChinaNet, CMCC, UNION or NUIST")
 	fmt.Scan(&isp)
 	res := NUIST_Auth{Username: username, Password: password, ISP: isp}
 	return res
