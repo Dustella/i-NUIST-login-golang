@@ -25,6 +25,7 @@ type Record struct {
 	Content string     `json:"content"`
 	Name    string     `json:"name"`
 	Proxied bool       `json:"proxied"`
+	TTL     int64      `json:"ttl"`
 }
 
 type RecordType = string
@@ -77,6 +78,19 @@ func (api *CloudflareAPI) UpdateDNSRecord(record Record) error {
 	json.NewEncoder(payload).Encode(record)
 
 	_, err := api.request("PUT", uri, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (api *CloudflareAPI) CreateDNSRecord(record Record) error {
+	uri := fmt.Sprintf("/zones/%s/dns_records/%s", api.ZoneID, record.ID)
+
+	payload := new(bytes.Buffer)
+	json.NewEncoder(payload).Encode(record)
+
+	_, err := api.request("POST", uri, payload)
 	if err != nil {
 		return err
 	}

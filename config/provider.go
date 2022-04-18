@@ -29,7 +29,8 @@ func GetConfig() NUIST_Auth {
 	if env.Username != "" && env.Password != "" && env.ISP != "" {
 		return env
 	}
-	return NUIST_Auth{}
+	final := proNuist()
+	return final
 }
 
 func GetCFConfig() Cloudflare_Config {
