@@ -14,6 +14,9 @@ func DoLogin(config config.NUIST_Auth, attempt int) (string, error) {
 			fmt.Printf("Get IP err, are you in I-NUIST?\n")
 			time.Sleep(time.Second * 1)
 			fmt.Printf("Making another getIP request, try time: %v\n", i)
+			if i == attempt-1 {
+				return "", err
+			}
 		} else {
 			myip = ip
 			fmt.Printf("Your IP is %v\n", ip)
@@ -31,6 +34,9 @@ func DoLogin(config config.NUIST_Auth, attempt int) (string, error) {
 			fmt.Printf("auth err, message: %v", err)
 			time.Sleep(time.Second * 1)
 			fmt.Printf("Making another request, try time: %v\n", i)
+			if i == attempt-1 {
+				return "", err
+			}
 		}
 	}
 	return myip, nil
