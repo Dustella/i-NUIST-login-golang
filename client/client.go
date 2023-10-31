@@ -1,12 +1,14 @@
 package client
 
 import (
+	"io"
 	"net"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/sirupsen/logrus"
 )
 
 type Status int
@@ -29,10 +31,15 @@ type AuthClient struct {
 func NewAuthClient() (*AuthClient, error) {
 	// inter, err := net.InterfaceByName("eth0")
 	// count := viper.GetInt("retry")
+	// create an empty io that destorys input
+	logger := logrus.New()
+	logger.Out = io.Discard
 	client := resty.New().
 		SetBaseURL("http://10.255.255.46/api/v1").
 		SetRetryCount(2).
-		SetTimeout(10 * time.Second)
+		SetTimeout(10 * time.Second).
+		SetLogger(logger)
+
 	return &AuthClient{
 		Client: client,
 	}, nil
