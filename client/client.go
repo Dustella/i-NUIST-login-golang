@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -27,7 +28,11 @@ type AuthClient struct {
 
 func NewAuthClient() (*AuthClient, error) {
 	// inter, err := net.InterfaceByName("eth0")
-	client := resty.New().SetBaseURL("http://10.255.255.46/api/v1")
+	// count := viper.GetInt("retry")
+	client := resty.New().
+		SetBaseURL("http://10.255.255.46/api/v1").
+		SetRetryCount(2).
+		SetTimeout(10 * time.Second)
 	return &AuthClient{
 		Client: client,
 	}, nil
@@ -50,6 +55,7 @@ func (c *AuthClient) SetInterface(intrf *net.Interface) {
 		LocalAddr: &net.TCPAddr{
 			IP: ip,
 		},
+		Timeout: 10 * time.Second,
 	}
 
 	c.Client.SetTransport(&http.Transport{

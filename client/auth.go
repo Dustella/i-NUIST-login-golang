@@ -18,21 +18,20 @@ type RespAuthInfo struct {
 }
 
 func (c *AuthClient) TestConnection() Status {
-	var status Status
 	// use miui generate 204
 	resp, err := c.Client.R().Get("http://connect.rom.miui.com/generate_204")
 	if err != nil {
-		status = Offline
+		c.Status = Offline
+		return c.Status
 	}
 	if resp.StatusCode() == 204 {
-		status = Online
+		c.Status = Online
 	} else if resp.StatusCode() == 302 {
-		status = Unauthorized
+		c.Status = Unauthorized
 	} else {
-		status = Offline
+		c.Status = Offline
 	}
-	c.Status = status
-	return status
+	return c.Status
 
 }
 
