@@ -20,7 +20,7 @@ jobs:
 
     - name: Build
       run: \
-        ./build.sh
+        build.sh
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
