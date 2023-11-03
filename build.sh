@@ -16,7 +16,7 @@ SCRIPT_NAME=`basename "$0"`
 FAILURES=""
 SOURCE_FILE=`echo $@ | sed 's/\.go//'`
 CURRENT_DIRECTORY=${PWD##*/}
-OUTPUT="build/go-NUIST-login"
+OUTPUT="build/i-nuist-login"
 
 for PLATFORM in $PLATFORMS; do
   GOOS=${PLATFORM%/*}
