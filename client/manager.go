@@ -3,78 +3,77 @@ package client
 import (
 	"log"
 	"main/config"
+	"strings"
 	"sync"
 )
 
 var SyncClients []AuthClient
 var RawClients []AuthClient
-var PrimeClient *AuthClient
+var PrimeClient AuthClient
 
 func InitClients() {
-	interfaces := config.ListNetworkInterface()
+	PrimeClient = NewAuthClient()
 
-	RawClients = make([]AuthClient, 0)
-	SyncClients = make([]AuthClient, 0)
-
-	c, _ := NewAuthClient()
-	PrimeClient = c
-	log.Println("init clients")
-
-	for _, inf := range interfaces {
-		client, err := NewAuthClient()
-		if err != nil {
-			continue
-		}
-		client.SetInterface(&inf)
-		RawClients = append(RawClients, *client)
-	}
-
-	// if (len(SyncClients)) == 0 {
-	// 	// not in nuist
-
-	// }
-
-	// if (len(SyncClients)) == 1 {
-	// 	// disable syncdial, use single dial
-	// }
-	// if len(SyncClients) > 1 {
-	// 	// syncdial
-	// }
+	FlushRawClients()
+	FlushSyncClients()
 }
 
-func PrepareSyncClients() {
-	log.Println(RawClients)
+func FlushRawClients() {
+	interfaces := config.ListNetworkInterface()
+	RawClients = make([]AuthClient, 0)
+	for _, inf := range interfaces {
+		client := NewAuthClient()
+
+		client.SetInterface(&inf)
+		RawClients = append(RawClients, client)
+	}
+	log.Println("========= Readed Raw Clients ===========")
+	for _, c := range RawClients {
+		log.Println("Raw Client:", c)
+	}
+	log.Println("========================================")
+}
+
+func FlushSyncClients() {
+	SyncClients = make([]AuthClient, 0)
 
 	var wg sync.WaitGroup
 	for _, client := range RawClients {
 		wg.Add(1)
 		go func(client AuthClient) {
 			defer wg.Done()
-			resp, err := client.GetIp()
-			log.Println(client.InterfaceName, resp)
-			if err == nil {
+			_, err := client.GetIp()
+			if err == nil && strings.EqualFold(client.ApiIp, client.InterfaceIp) {
 				SyncClients = append(SyncClients, client)
+			}
+		}(client)
+	}
+	wg.Wait()
+	log.Println("========= Readed Sync Clients ===========")
+	for _, c := range SyncClients {
+		log.Println("Sync Client:", c)
+	}
+	log.Println("========================================")
+}
+
+func MultiDial() {
+	wg := sync.WaitGroup{}
+	for _, client := range SyncClients {
+		wg.Add(1)
+		go func(client AuthClient) {
+			defer wg.Done()
+			res := client.TestConnection()
+			if res == Unauthorized {
+				client.DoAuth()
 			}
 		}(client)
 	}
 	wg.Wait()
 }
 
-func MultiDial() {
-	for _, client := range SyncClients {
-		go func(client AuthClient) {
-			res := client.TestConnection()
-			if res != Online {
-				client.DoAuth()
-			}
-		}(client)
-	}
-}
-
 func SingleDial() {
 	res := PrimeClient.TestConnection()
-	if res != Online {
+	if res == Unauthorized {
 		PrimeClient.DoAuth()
 	}
-
 }

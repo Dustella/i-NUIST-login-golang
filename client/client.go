@@ -28,7 +28,7 @@ type AuthClient struct {
 	Status        Status
 }
 
-func NewAuthClient() (*AuthClient, error) {
+func NewAuthClient() AuthClient {
 	// inter, err := net.InterfaceByName("eth0")
 	// count := viper.GetInt("retry")
 	// create an empty io that destorys input
@@ -37,12 +37,12 @@ func NewAuthClient() (*AuthClient, error) {
 	client := resty.New().
 		SetBaseURL("http://10.255.255.46/api/v1").
 		SetRetryCount(2).
-		SetTimeout(10 * time.Second).
-		SetLogger(logger)
+		SetTimeout(10 * time.Second)
+		// SetLogger(logger)
 
-	return &AuthClient{
+	return AuthClient{
 		Client: client,
-	}, nil
+	}
 
 }
 
@@ -58,11 +58,14 @@ func (c *AuthClient) SetInterface(intrf *net.Interface) {
 			}
 		}
 	}
+
+	// randPort := 50000 + rand.Intn(10000)
 	dialer := &net.Dialer{
 		LocalAddr: &net.TCPAddr{
 			IP: ip,
+			// Port: randPort,
 		},
-		Timeout: 10 * time.Second,
+		Timeout: 20 * time.Second,
 	}
 
 	c.Client.SetTransport(&http.Transport{

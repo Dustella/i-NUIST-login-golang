@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -28,21 +29,34 @@ func (u UserRecord) GetChannelCode() string {
 	}
 }
 
-func parseUserString(str string) UserRecord {
+func ParseUserString(str string) (UserRecord, error) {
 	// str format: username:password@isp
+	log.Println(str)
+	if strings.Count(str, ":") != 1 || strings.Count(str, "@") != 1 {
+		return UserRecord{}, nil
+	}
 	userpass := strings.Split(str, "@")[0]
 	isp := strings.Split(str, "@")[1]
 	username := strings.Split(userpass, ":")[0]
 	password := strings.Split(userpass, ":")[1]
-	return UserRecord{username, password, isp}
+	if len(username) == 0 || len(password) == 0 || len(isp) == 0 {
+		return UserRecord{}, nil
+	}
+	return UserRecord{username, password, isp}, nil
 }
 
-func parseUserRecords(str string) []UserRecord {
+func ParseUserRecords(str string) []UserRecord {
 	// str format: username:password@isp,username:password@isp
-	strs := strings.Split(str, ",")
+	formatted := strings.ReplaceAll(str, "\n", "")
+	strs := strings.Split(formatted, ",")
 	var records []UserRecord
-	for _, v := range strs {
-		records = append(records, parseUserString(v))
+	for _, line := range strs {
+		line := strings.Trim(line, " ")
+		record, err := ParseUserString(line)
+		if err != nil {
+			continue
+		}
+		records = append(records, record)
 	}
 	return records
 }

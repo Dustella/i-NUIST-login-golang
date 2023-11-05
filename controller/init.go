@@ -1,13 +1,20 @@
 package controller
 
-import "main/config"
+import (
+	"main/client"
+	"main/config"
+)
 
-func Init() {
+func BootStrap() {
 	mode := config.GetMode()
-	if mode == "info" {
-		printInfo()
-	}
-	if mode == "login" {
+	client.InitClients()
 
+	switch mode {
+	case "info":
+		printInfo()
+	case "login":
+		client.SingleDial()
+	case "daemon":
+		client.StartDaemon()
 	}
 }

@@ -17,7 +17,7 @@ func printInfo() {
 	log.Println("userPool:", userPool)
 
 	client.InitClients()
-	client.PrepareSyncClients()
+	client.FlushSyncClients()
 	log.Println("sync clients:", client.SyncClients)
 	// client.MultiDial()
 	// client.SingleDial()

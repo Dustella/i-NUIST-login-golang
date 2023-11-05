@@ -37,8 +37,8 @@ func (c *AuthClient) TestConnection() Status {
 
 func (c *AuthClient) GetIp() (string, error) {
 	data := IPInfo{}
-	_, err := c.Client.R().SetResult(data).Get("/ip")
-	if err != nil {
+	resp, err := c.Client.R().SetResult(data).Get("/ip")
+	if err != nil || resp.IsError() {
 		return "", err
 	}
 	c.ApiIp = data.Data
