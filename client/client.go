@@ -20,12 +20,20 @@ const (
 	Unknown
 )
 
+func (s Status) String() string {
+	return [...]string{"Online", "Unauthorized", "Offline", "Unknown"}[s]
+}
+
 type AuthClient struct {
 	ApiIp         string
 	InterfaceName string
 	InterfaceIp   string
 	Client        *resty.Client
 	Status        Status
+}
+
+func (c *AuthClient) Info() string {
+	return "Name: " + c.InterfaceName + ", InterfaceIP: " + c.InterfaceIp + ", ApiIP: " + c.ApiIp
 }
 
 func NewAuthClient() AuthClient {
@@ -37,16 +45,17 @@ func NewAuthClient() AuthClient {
 	client := resty.New().
 		SetBaseURL("http://10.255.255.46/api/v1").
 		SetRetryCount(2).
-		SetTimeout(10 * time.Second)
-		// SetLogger(logger)
+		SetTimeout(4 * time.Second).
+		SetLogger(logger)
 
 	return AuthClient{
 		Client: client,
+		Status: Unknown,
 	}
 
 }
 
-func (c *AuthClient) SetInterface(intrf *net.Interface) {
+func (c *AuthClient) SetInterface(intrf net.Interface) {
 	var ip net.IP
 	ip_range, _ := intrf.Addrs()
 
@@ -59,13 +68,10 @@ func (c *AuthClient) SetInterface(intrf *net.Interface) {
 		}
 	}
 
-	// randPort := 50000 + rand.Intn(10000)
+	localAddr, _ := net.ResolveTCPAddr("tcp", ip.String()+":0")
 	dialer := &net.Dialer{
-		LocalAddr: &net.TCPAddr{
-			IP: ip,
-			// Port: randPort,
-		},
-		Timeout: 20 * time.Second,
+		LocalAddr: localAddr,
+		Timeout:   20 * time.Second,
 	}
 
 	c.Client.SetTransport(&http.Transport{
@@ -79,5 +85,5 @@ func (c *AuthClient) SetInterface(intrf *net.Interface) {
 func (c *AuthClient) MaybeInNuist() bool {
 	ip := c.InterfaceIp
 	// 10. or DHCP unallocated
-	return (strings.HasPrefix(ip, "10.") || strings.HasPrefix(ip, "169.254"))
+	return (strings.HasPrefix(ip, "10."))
 }

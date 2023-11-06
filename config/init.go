@@ -18,5 +18,6 @@ func InitConfig() {
 
 	BindFlags()
 	ReadArgs()
+	ReadRecordFile()
 
 }

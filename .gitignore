@@ -5,3 +5,6 @@ upx.exe
 
 main.exe 
 tmp
+arm64
+
+test.sh

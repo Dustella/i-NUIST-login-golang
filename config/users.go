@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -31,7 +30,6 @@ func (u UserRecord) GetChannelCode() string {
 
 func ParseUserString(str string) (UserRecord, error) {
 	// str format: username:password@isp
-	log.Println(str)
 	if strings.Count(str, ":") != 1 || strings.Count(str, "@") != 1 {
 		return UserRecord{}, nil
 	}

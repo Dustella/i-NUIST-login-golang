@@ -1,11 +1,24 @@
 package main
 
 import (
+	"main/client"
 	"main/config"
-	"main/controller"
 )
 
 func main() {
+	BootStrap()
+}
+
+func BootStrap() {
 	config.InitConfig()
-	controller.BootStrap()
+	mode := config.GetMode()
+
+	switch mode {
+	case "info":
+		client.PrintInfo()
+	case "login":
+		client.Dial()
+	case "daemon":
+		client.StartDaemon()
+	}
 }

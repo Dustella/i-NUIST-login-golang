@@ -2,6 +2,7 @@ package client
 
 import (
 	"errors"
+	"log"
 	"main/config"
 )
 
@@ -24,23 +25,24 @@ func (c *AuthClient) TestConnection() Status {
 		c.Status = Offline
 		return c.Status
 	}
-	if resp.StatusCode() == 204 {
+	switch resp.StatusCode() {
+	case 204:
 		c.Status = Online
-	} else if resp.StatusCode() == 302 {
+	case 302:
 		c.Status = Unauthorized
-	} else {
+	default:
 		c.Status = Offline
 	}
 	return c.Status
-
 }
 
 func (c *AuthClient) GetIp() (string, error) {
-	data := IPInfo{}
-	resp, err := c.Client.R().SetResult(data).Get("/ip")
+	resp, err := c.Client.R().SetResult(&IPInfo{}).Get("/ip")
 	if err != nil || resp.IsError() {
 		return "", err
 	}
+	data := resp.Result().(*IPInfo)
+	log.Printf("GetIp: %v", data)
 	c.ApiIp = data.Data
 	return data.Data, nil
 }
@@ -57,11 +59,11 @@ func (c *AuthClient) DoAuth() error {
 		"username":    user.Username,
 		"usripadd":    c.ApiIp,
 	}
-	data := RespAuthInfo{}
-	_, err := c.Client.R().SetBody(payload).SetResult(data).Post("/login")
+	resp, err := c.Client.R().SetBody(payload).SetResult(&RespAuthInfo{}).Post("/login")
 	if err != nil {
 		return err
 	}
+	data := resp.Result().(*RespAuthInfo)
 	if data.Code == 200 {
 		c.Status = Online
 		return nil

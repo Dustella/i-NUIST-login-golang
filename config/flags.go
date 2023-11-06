@@ -13,33 +13,29 @@ func BindFlags() {
 	pflag.Bool("syncdial", false, "Force multi dial")
 	pflag.Bool("single", false, "Force single dial")
 	pflag.String("userpool", "./pool.txt", "User record file")
+	pflag.Bool("verbose", false, "Verbose mode")
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 
 }
 
 func ReadArgs() {
+	userstring := ""
 
-	args := pflag.Args()
-
-	if len(args) == 0 {
+	switch length := len(pflag.Args()); length {
+	case 0:
 		log.Fatal("No args")
-	}
-
-	var userstring string
-
-	if len(args) >= 1 {
-		mode = args[0]
-	}
-
-	if len(args) == 2 {
-		userstring = args[1]
+	case 1:
+		mode = pflag.Arg(0)
+	case 2:
+		mode = pflag.Arg(0)
+		userstring = pflag.Arg(1)
+	default:
+		log.Fatal("Too many args")
 	}
 
 	if len(userstring) > 0 {
-		records := ParseUserRecords(userstring)
-		userPool = append(userPool, records...)
+		userPool = append(userPool, ParseUserRecords(userstring)...)
 	}
 
-	ReadRecordFile()
 }

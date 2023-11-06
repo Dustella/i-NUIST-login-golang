@@ -1,7 +1,6 @@
 package client
 
 import (
-	"log"
 	"main/config"
 	"strings"
 	"sync"
@@ -11,7 +10,7 @@ var SyncClients []AuthClient
 var RawClients []AuthClient
 var PrimeClient AuthClient
 
-func InitClients() {
+func FlushClients() {
 	PrimeClient = NewAuthClient()
 
 	FlushRawClients()
@@ -23,15 +22,11 @@ func FlushRawClients() {
 	RawClients = make([]AuthClient, 0)
 	for _, inf := range interfaces {
 		client := NewAuthClient()
-
-		client.SetInterface(&inf)
+		client.SetInterface(inf)
+		client.TestConnection()
 		RawClients = append(RawClients, client)
 	}
-	log.Println("========= Readed Raw Clients ===========")
-	for _, c := range RawClients {
-		log.Println("Raw Client:", c)
-	}
-	log.Println("========================================")
+	PrintRawClients()
 }
 
 func FlushSyncClients() {
@@ -43,17 +38,14 @@ func FlushSyncClients() {
 		go func(client AuthClient) {
 			defer wg.Done()
 			_, err := client.GetIp()
-			if err == nil && strings.EqualFold(client.ApiIp, client.InterfaceIp) {
+			strings.EqualFold(client.ApiIp, client.InterfaceIp)
+			if err == nil {
 				SyncClients = append(SyncClients, client)
 			}
 		}(client)
 	}
 	wg.Wait()
-	log.Println("========= Readed Sync Clients ===========")
-	for _, c := range SyncClients {
-		log.Println("Sync Client:", c)
-	}
-	log.Println("========================================")
+	PrintSyncClients()
 }
 
 func MultiDial() {
@@ -74,6 +66,7 @@ func MultiDial() {
 func SingleDial() {
 	res := PrimeClient.TestConnection()
 	if res == Unauthorized {
+		PrimeClient.GetIp()
 		PrimeClient.DoAuth()
 	}
 }

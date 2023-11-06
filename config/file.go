@@ -15,8 +15,8 @@ func ReadRecordFile() {
 
 	file, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatal(err)
 		if len(userPool) == 0 {
+			log.Fatal(err)
 			panic("No user in userPool")
 		}
 	}

@@ -23,12 +23,26 @@ jobs:
       run: 
         bash ./build.sh
 
+    # - name: Prepare Artifacts
+    #   run: |
+    #     for file in build/*; do
+    #         if [ -f "$file" ]; then
+    #             echo "Detected $file"
+    #             name="$name $file"
+    #         fi
+    #     done
+    #     echo "ART_PATH=$name" >> "$GITHUB_ENV"
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
         # Artifact name
         name: artifact # optional, default is artifact
         # A file, directory or wildcard pattern that describes what to upload
-        path: build/*
+        # path: build/*
+        path: |
+          build/*
         # The desired behavior if no files are found using the provided path.
 
